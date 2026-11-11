@@ -1,0 +1,21 @@
+services:
+  tunein:
+    image: mympd-tunein:local
+    build: .
+    container_name: tunein
+    network_mode: host
+    user: "1000:1000"
+    volumes:
+      - type: bind
+        source: ./data/tunein.cfg
+        target: /config/tunein.cfg
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ../mympd/data/workdir/pics/tunein-stations
+        target: /artwork
+        bind:
+          create_host_path: false
+    command: ["--listen", "127.0.0.1", "--port", "18766", "--artwork-dir", "/artwork"]
+    restart: unless-stopped

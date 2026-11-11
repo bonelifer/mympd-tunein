@@ -1,0 +1,19 @@
+services:
+  tunein:
+    build: .
+    user: "${TUNEIN_UID:?Set TUNEIN_UID}:${TUNEIN_GID:?Set TUNEIN_GID}"
+    volumes:
+      - type: bind
+        source: "${TUNEIN_CONFIG:-./tunein.cfg}"
+        target: /config/tunein.cfg
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      - mpd
+    restart: unless-stopped
+
+networks:
+  mpd:
+    external: true
+    name: "${MPD_NETWORK:-mpd}"

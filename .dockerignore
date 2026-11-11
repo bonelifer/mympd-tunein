@@ -1,0 +1,5 @@
+**
+!bridge.py
+!vendor/
+!vendor/**
+**/__pycache__/

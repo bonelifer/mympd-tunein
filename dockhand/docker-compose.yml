@@ -1,7 +1,6 @@
 services:
   tunein:
-    image: mympd-tunein:local
-    build: .
+    image: ghcr.io/bonelifer/mympd-tunein:latest
     container_name: tunein
     network_mode: host
     user: "1000:1000"

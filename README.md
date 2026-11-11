@@ -6,6 +6,8 @@ picker and resolves the stream when you select a station.
 
 ## Docker Compose
 
+Compose pulls the published image from `ghcr.io/bonelifer/mympd-tunein:latest`.
+
 Create the config once, then fill in your TuneIn username and password
 in `tunein.cfg`. Compose mounts the file read-only.
 
@@ -17,7 +19,7 @@ export TUNEIN_UID="$(id -u)" TUNEIN_GID="$(id -g)"
 If myMPD uses host networking, start the bridge on loopback.
 
 ```sh
-docker compose -f compose.yaml -f compose.host.yaml up --build -d
+docker compose -f compose.yaml -f compose.host.yaml up --pull always -d
 ```
 
 If myMPD uses a private Docker network, start the bridge on that network
@@ -25,7 +27,7 @@ and set the Lua script's `service` URL to `http://tunein:18766`.
 
 ```sh
 export MPD_NETWORK=your-existing-mpd-network
-docker compose up --build -d
+docker compose up --pull always -d
 ```
 
 Set `TUNEIN_CONFIG` to an absolute path to use a different config file.
@@ -35,10 +37,9 @@ changing the credentials.
 ## Dockhand
 
 For a host-networked Dockhand stack, copy the contents of `dockhand/`
-into the stack directory alongside `Dockerfile`, `.dockerignore`,
-`bridge.py`, `vendor/`, `install-picker.py`, and `tunein.lua`. The Dockhand Compose file
+into the stack directory. The Dockhand Compose file
 expects the private config at `data/tunein.cfg` and runs as UID and GID
-1000. Build the stack in Dockhand. Run `make` in the stack directory to
+1000. Deploy the stack in Dockhand. Run `make` in the stack directory to
 list its management commands.
 
 ## Run without Docker

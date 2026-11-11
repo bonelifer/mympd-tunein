@@ -1,6 +1,6 @@
 services:
   tunein:
-    build: .
+    image: ghcr.io/bonelifer/mympd-tunein:latest
     user: "${TUNEIN_UID:?Set TUNEIN_UID}:${TUNEIN_GID:?Set TUNEIN_GID}"
     volumes:
       - type: bind

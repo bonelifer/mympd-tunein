@@ -104,6 +104,11 @@ included. The myMPD picker follows the approach used by
 
 - Code and documentation assisted by [Codex](https://openai.com/codex/).
 
+For optional Last.fm scan labels in the favorites picker, point the bridge
+at the scanner's JSON report with `--scan-report /path/to/tunein-scan.json`.
+With Docker, mount the report directory read-only so updates are visible.
+A check and text label identify scrobble candidates and inconclusive scans. All favorites stay selectable.
+
 ## License
 
 GNU General Public License v3.0. See [LICENSE](LICENSE).

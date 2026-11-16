@@ -25,7 +25,13 @@ local function station_select(stations, name)
     local ids, names = {}, {}
     for _, item in ipairs(stations) do
         ids[#ids + 1] = item.id
-        names[#names + 1] = item.name
+        local label = item.name
+        if item.scrobbleStatus == "plain-title-candidate" then
+            label = "\226\156\147 " .. label .. " (scrobble candidate)"
+        elseif item.scrobbleStatus == "inconclusive" then
+            label = "\226\152\145 " .. label .. " (scan inconclusive)"
+        end
+        names[#names + 1] = label
     end
     return {
         name = name,

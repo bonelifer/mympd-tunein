@@ -169,6 +169,22 @@ def favorite_stations(client: TuneIn, username: str):
     return stations, folders
 
 
+def scan_statuses(report: Path | None) -> dict[str, str]:
+    """Read optional Last.fm scan labels without filtering TuneIn stations."""
+    if report is None:
+        return {}
+    try:
+        with report.open(encoding="utf-8") as source:
+            entries = json.load(source)["stations"]
+        return {
+            row["id"]: row["result"] for row in entries
+            if re.fullmatch(r"s[0-9]+", row["id"])
+            and row["result"] in {"plain-title-candidate", "inconclusive"}
+        }
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
 class FavoritesHandler(BaseHTTPRequestHandler):
     """Serve favorite stations and resolve a selected station on demand."""
 
@@ -184,7 +200,11 @@ class FavoritesHandler(BaseHTTPRequestHandler):
                     server.client, server.username
                 )
                 server.stations = supported_stations(server.client, server.stations)
-                self.respond(200, list(server.stations.values()))
+                statuses = scan_statuses(server.scan_report)
+                self.respond(200, [
+                    {**item, "scrobbleStatus": statuses.get(item["id"], "")}
+                    for item in server.stations.values()
+                ])
             elif path == "/search":
                 query = parse_qs(request.query).get("q", [""])[0].strip()
                 if not 1 <= len(query) <= 100:
@@ -271,6 +291,7 @@ def main() -> int:
     parser.add_argument("-c", "--config", help="Path to the TuneIn INI file")
     parser.add_argument("-l", "--listen", default="127.0.0.1")
     parser.add_argument("--artwork-dir", type=Path)
+    parser.add_argument("--scan-report", type=Path, help="Optional Last.fm TuneIn scan JSON")
     parser.add_argument("-p", "--port", type=int, default=18766)
     args = parser.parse_args()
     if args.config:
@@ -306,6 +327,7 @@ def main() -> int:
         server.username = username
         server.password = password
         server.artwork_dir = args.artwork_dir
+        server.scan_report = args.scan_report
         server.stations = {}
         print(f"TuneIn Favorites is listening on {server.server_address}.")
         try:
